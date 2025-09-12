@@ -1,0 +1,8 @@
+.vscode
+csharp/.vs
+csharp/bin
+csharp/obj
+*.dll
+MyLibShare.csproj
+MyLibShare.csproj.user
+MyLibShare.sln
