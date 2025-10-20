@@ -70,10 +70,10 @@ internal class NativeMethods
     [DllImport("libView")] internal static extern IntPtr ViewIterator_value(IntPtr it);
 
 
-    [DllImport("libStringObj")] internal static extern IntPtr csharp_new_string_obj();
-    [DllImport("libStringObj")] internal static extern int csharp_string_obj_set(IntPtr it, bool b, [MarshalAs(UnmanagedType.LPWStr)]string s);
-    [DllImport("libStringObj")][return: MarshalAs(UnmanagedType.LPWStr)]
-    internal static extern string csharp_string_obj_get(IntPtr it, bool b);
+    //[DllImport("libStringObj")] internal static extern IntPtr csharp_new_string_obj();
+    //[DllImport("libStringObj")] internal static extern int csharp_string_obj_set(IntPtr it, bool b, [MarshalAs(UnmanagedType.LPWStr)]string s);
+    //[DllImport("libStringObj")][return: MarshalAs(UnmanagedType.LPWStr)]
+    //internal static extern string csharp_string_obj_get(IntPtr it, bool b);
 
     protected class StringHelper
     {

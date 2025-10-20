@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 
 class Test
@@ -14,6 +15,36 @@ class Test
         value += a;
     }
 }
+
+class Base 
+{
+     
+}
+
+class MyCallBack : CallBackTest.ICallBack
+{
+    public MyCallBack() : base() { }
+    public override void print(){ Console.WriteLine("This is MyCallBack"); }
+}
+
+public delegate int MyFunc(int x);
+
+class Derive 
+{
+    public static implicit operator Base(Derive d)
+    {
+        return new Base();
+    }
+
+    public static explicit operator Derive(Base b)
+    {
+        return  new Derive();
+    }
+
+    public int x = 0;
+
+}
+    
 
 class Demo
 {
@@ -69,5 +100,20 @@ class Demo
             s.set("C# set 你好");
             Console.WriteLine("c# StringObj set: " + s.get());
         }
+
+        Derive d = new Derive();
+        d.x = 1;
+        Base b = d;
+        Derive dd = (Derive)b;
+        Console.WriteLine(dd.x);
+
+        using (var cb = new MyCallBack())
+        {
+            CallBackTest.Global.call_print(cb);
+        }
+
+        //Global.test_exception();
+
+        while (true) ;
     }
 }

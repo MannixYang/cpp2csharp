@@ -1,36 +1,48 @@
 using System;
+using System.Runtime.InteropServices;
 
-public class StringObj : IDisposable
+public class StringObj : SafeHandle
 {
-    public IntPtr nativePtr;
-    protected bool ownsMemory;
+    private object owner;
 
-    internal StringObj(IntPtr ptr, bool ownsMemory = false)
+    internal StringObj(IntPtr ptr, object owner = null):base(ptr, owner == null)
     {
-        nativePtr = ptr;
-        this.ownsMemory = ownsMemory;
+        this.owner = owner;
     }
 
-    internal StringObj()
+    internal bool own_memory { get { return this.owner == null; } }
+    public override bool IsInvalid { get { return this.handle == IntPtr.Zero; } }
+
+    [DllImport("libStringObj")] 
+    internal static extern IntPtr cmid_new_string_obj();
+    internal StringObj():base(IntPtr.Zero, true)
     {
-        nativePtr = NativeMethods.csharp_new_string_obj();
-        ownsMemory = true;
+        this.handle =  cmid_new_string_obj();
     }
 
-    public String get(){ return NativeMethods.csharp_string_obj_get(nativePtr, ownsMemory); }
+    [DllImport("libStringObj")]
+    [return: MarshalAs(UnmanagedType.LPWStr)]
+    internal static extern string cmid_string_obj_get(IntPtr it, bool b);
+    public String get(){ 
+        return cmid_string_obj_get(this.handle, this.own_memory); 
+    }
 
-    public void set(String s) { NativeMethods.csharp_string_obj_set(nativePtr, ownsMemory, s); }
+    [DllImport("libStringObj")]
+    internal static extern int cmid_string_obj_set(IntPtr it, bool b, [MarshalAs(UnmanagedType.LPWStr)] string s);
+    public void set(String s) { 
+        cmid_string_obj_set(this.handle, this.own_memory, s); 
+    }
 
-    public void Dispose()
+
+    [DllImport("libStringObj")]
+    internal static extern IntPtr cmid_string_obj_delete(IntPtr it, bool b);
+    protected override bool ReleaseHandle()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        if (this.owner == null && !this.IsInvalid)
+            cmid_string_obj_delete(this.handle, this.own_memory);
+
+        SetHandleAsInvalid();
+        return true;
     }
 
-    protected virtual void Dispose(bool disposing) {
-        if (ownsMemory && nativePtr != IntPtr.Zero) {
-            // NativeMethods.Animal_delete(nativePtr);
-            nativePtr = IntPtr.Zero;
-        }
-    }
 }
